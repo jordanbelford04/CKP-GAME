@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Выбор персонажа</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            flex-direction: column;
+        }
+
+        .character-select {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .character-card {
+            border: 2px solid #000;
+            padding: 10px;
+            text-align: center;
+            width: 30%;
+            background-color: #fff;
+            position: relative;
+        }
+
+        .character-card img {
+            width: 100px;
+            height: 100px;
+        }
+
+        .character-card button {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .character-card button:disabled {
+            background-color: #ccc;
+        }
+
+        .start-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Выбор персонажа</h1>
+    <div class="character-select" id="characterSelect">
+        <!-- Карточки персонажей будут вставлены сюда через JavaScript -->
+    </div>
+    <button class="start-button" id="startGameButton" disabled>Начать игру</button>
+
+    <script>
+        const characters = [
+            { name: 'CryptoCat', superPower: 'invincibility', sprite: 'https://via.placeholder.com/50', coins: 0, upgradeLevel: 0 },
+            { name: 'NFTKnight', superPower: 'shield', sprite: 'https://via.placeholder.com/50', coins: 0, upgradeLevel: 0 },
+            { name: 'PixelPirate', superPower: 'speedBoost', sprite: 'https://via.placeholder.com/50', coins: 0, upgradeLevel: 0 }
+        ];
+
+        const upgradeCosts = [100, 300, 600]; // Стоимость прокачки персонажа в монетах
+
+        let selectedCharacter = null;
+
+        const savedCharacters = JSON.parse(localStorage.getItem('characters')) || characters;
+        savedCharacters.forEach((savedChar, index) => {
+            const charIndex = characters.findIndex(char => char.name === savedChar.name);
+            if (charIndex !== -1) {
+                characters[charIndex] = savedChar;
+            }
+        });
+
+        function renderCharacterCards() {
+            const characterSelect = document.getElementById('characterSelect');
+            characterSelect.innerHTML = '';
+
+            characters.forEach((character, index) => {
+                const card = document.createElement('div');
+                card.className = 'character-card';
+
+                const img = document.createElement('img');
+                img.src = character.sprite;
+                card.appendChild(img);
+
+                const name = document.createElement('h2');
+                name.textContent = character.name;
+                card.appendChild(name);
+
+                const coins = document.createElement('p');
+                coins.textContent = `Монеты: ${character.coins}`;
+                card.appendChild(coins);
+
+                const upgradeButton = document.createElement('button');
+                upgradeButton.textContent = `Прокачать (${upgradeCosts[character.upgradeLevel] || 'MAX'})`;
+                upgradeButton.disabled = character.upgradeLevel >= upgradeCosts.length || character.coins < (upgradeCosts[character.upgradeLevel] || Infinity);
+                upgradeButton.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    upgradeCharacter(index);
+                });
+                card.appendChild(upgradeButton);
+
+                card.addEventListener('click', () => selectCharacter(index));
+                characterSelect.appendChild(card);
+            });
+        }
+
+        function selectCharacter(index) {
+            selectedCharacter = characters[index];
+            document.getElementById('startGameButton').disabled = false;
+        }
+
+        function upgradeCharacter(index) {
+            const character = characters[index];
+            const cost = upgradeCosts[character.upgradeLevel];
+
+            if (character.coins >= cost) {
+                character.coins -= cost;
+                character.upgradeLevel += 1;
+                renderCharacterCards();
+            }
+        }
+
+        document.getElementById('startGameButton').addEventListener('click', () => {
+            localStorage.setItem('selectedCharacter', JSON.stringify(selectedCharacter));
+            localStorage.setItem('characters', JSON.stringify(characters));
+            window.location.href = 'game.html';
+        });
+
+        renderCharacterCards();
+    </script>
+</body>
+</html>
