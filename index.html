@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+
+<голова>
+
+    <мета-кодировка="UTF-8">
+
+    <meta name="viewport" content="width=device-width, Initial-scale=1.0">
+
+    <title>Выбор персонажа</title>
+
+    <стиль>
+
+        { тело
+
+            дисплей: гибкий;
+
+            оправдание-содержание: центр;
+
+            выровнять-элементы: по центру;
+
+            высота: 100вх;
+
+            маржа: 0;
+
+            цвет фона: #f0f0f0;
+
+            гибкое направление: столбец;
+
+        }
+
+
+
+        .character-select {
+
+            дисплей: гибкий;
+
+            оправдание-содержание: пространство вокруг;
+
+            ширина: 100%;
+
+            максимальная ширина: 800 пикселей;
+
+        }
+
+
+
+        .карточка персонажа {
+
+            граница: 2 пикселя, сплошная #000;
+
+            отступ: 10 пикселей;
+
+            спортивный текст: по центру;
+
+            ширина: 30%;
+
+            цвет фона: #fff;
+
+            положение: относительное;
+
+        }
+
+
+
+        .character-card img {
+
+            ширина: 100 пикселей;
+
+            высота: 100 пикселей;
+
+        }
+
+
+
+        Кнопка .карточки символов {
+
+            маржа сверху: 10 пикселей;
+
+            отступ: 10 пикселей;
+
+            цвет фона: #007bff;
+
+            белый цвет;
+
+            граница: нет;
+
+            опасность: указатель;
+
+        }
+
+
+
+        Кнопка .символ-карта: отключено {
+
+            цвет фона: #ccc;
+
+        }
+
+
+
+        .кнопка Пуск {
+
+            поле сверху: 20 пикселей;
+
+            отступ: 10 пикселей 20 пикселей;
+
+            цвет фона: #28a745;
+
+            белый цвет;
+
+            граница: нет;
+
+            опасность: указатель;
+
+        }
+
+    </стиль>
+
+</голова>
+
+<тело>
+
+    <h1>Выбор персонажа</h1>
+
+    <div class="character-select" id="characterSelect">
+
+        <!-- Карточки персонажей будут вставлены сюда для движения -->
+
+    </div>
+
+    <button class="start-button" id="startGameButton" отключен>Начать игру</button>
+
+
+
+    <скрипт>
+
+        константные символы = [
+
+            { name: «CryptoCat», superPower: «непобедимость», спрайт: «https://via.placeholder.com/50», монеты: 0,gradeLevel: 0 },
+
+            { name: 'NFTKnight', superPower: 'shield', спрайт: 'https://via.placeholder.com/50', монеты: 0,gradeLevel: 0 },
+
+            { name: 'PixelPirate', superPower: 'speedBoost', спрайт: 'https://via.placeholder.com/50', монеты: 0,gradeLevel: 0 }
+
+        ];
+
+
+
+        const updateCosts = [100, 300, 600]; // Костачки персонажа в монетах
+
+
+
+        пусть выбранныйCharacter = null;
+
+
+
+        const saveCharacters = JSON.parse(localStorage.getItem('characters')) || персонажи;
+
+        saveCharacters.forEach((savedChar, index) => {
+
+            const charIndex = символы.findIndex(char => char.name === saveChar.name);
+
+            если (charIndex !== -1) {
+
+                символы [charIndex] = saveChar;
+
+            }
+
+        });
+
+
+
+        функция renderCharacterCards() {
+
+            constcharacterSelect = document.getElementById('characterSelect');
+
+            characterSelect.innerHTML = '';
+
+
+
+            символы.forEach((символ, индекс) => {
+
+                const card = document.createElement('div');
+
+                card.className = 'карточка персонажа';
+
+
+
+                const img = document.createElement('img');
+
+                img.src = персонаж.спрайт;
+
+                card.appendChild(img);
+
+
+
+                const name = document.createElement('h2');
+
+                имя.текстСодержимое = персонаж.имя;
+
+                card.appendChild(имя);
+
+
+
+                const coin = document.createElement('p');
+
+                coin.textContent = `Монеты: ${character.coins}`;
+
+                card.appendChild(монеты);
+
+
+
+                const updateButton = document.createElement('кнопка');
+
+                upgradeButton.textContent = `Прокачать (${upgradeCosts[character.upgradeLevel] || 'MAX'})`;
+
+                updateButton.disabled =character.upgradeLevel >=upgradeCosts.length || персонаж.монеты < (upgradeCosts[character.upgradeLevel] || Бесконечность);
+
+                updateButton.addEventListener('click', (event) => {
+
+                    событие.stopPropagation();
+
+                    updateCharacter (индекс);
+
+                });
+
+                card.appendChild(upgradeButton);
+
+
+
+                card.addEventListener('click', () => selectCharacter(index));
+
+                персонажSelect.appendChild(карта);
+
+            });
+
+        }
+
+
+
+        Функция selectCharacter(индекс) {
+
+            selectedCharacter = символы[индекс];
+
+            document.getElementById('startGameButton').disabled = false;
+
+        }
+
+
+
+        функция updateCharacter(индекс) {
+
+            константный символ = символы [индекс];
+
+            константная стоимость =upgradeCosts[character.upgradeLevel];
+
+
+
+            if (character.coins >= стоимость) {
+
+                персонаж.монеты -= стоимость;
+
+                персонаж.upgradeLevel += 1;
+
+                рендерингCharacterCards();
+
+            }
+
+        }
+
+
+
+        document.getElementById('startGameButton').addEventListener('click', () => {
+
+            localStorage.setItem('selectedCharacter', JSON.stringify(selectedCharacter));
+
+            localStorage.setItem('characters', JSON.stringify(characters));
+
+            window.location.href = 'game.html';
+
+        });
+
+
+
+        рендерингCharacterCards();
+
+    </скрипт>
+
+</тело>
+
+</html>
